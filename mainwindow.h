@@ -4,6 +4,7 @@
 #include <pcl/visualization/pcl_visualizer.h>
 
 #include <QMainWindow>
+#include <QButtonGroup>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -18,7 +19,7 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-
+    QButtonGroup *mainBtnGrp;
 private slots:
     void getPCDFile();
 

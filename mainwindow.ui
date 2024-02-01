@@ -1506,6 +1506,22 @@
     <item>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::MinimumExpanding</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
        <widget class="QPushButton" name="Function1">
         <property name="minimumSize">
          <size>
@@ -1513,26 +1529,39 @@
           <height>40</height>
          </size>
         </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton{
+            border:1px solid rgb(143,143,143); 
+            background-color:white; 
+            color:black;
+            }
+ 
+QPushButton:checked{
+                    border:1px solid rgb(143,143,143); 
+                    background-color:rgb(2,125,180); 
+                    color:white;
+                    }</string>
+        </property>
         <property name="text">
          <string>Function1</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="Function2">
-        <property name="enabled">
-         <bool>true</bool>
+       <spacer name="verticalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
         </property>
-        <property name="minimumSize">
+        <property name="sizeHint" stdset="0">
          <size>
-          <width>0</width>
+          <width>20</width>
           <height>40</height>
          </size>
         </property>
-        <property name="text">
-         <string>Function2</string>
-        </property>
-       </widget>
+       </spacer>
       </item>
       <item>
        <widget class="QPushButton" name="Function3">
@@ -1542,21 +1571,65 @@
           <height>40</height>
          </size>
         </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton{
+            border:1px solid rgb(143,143,143); 
+            background-color:white; 
+            color:black;
+            }
+ 
+QPushButton:checked{
+                    border:1px solid rgb(143,143,143); 
+                    background-color:rgb(2,125,180); 
+                    color:white;
+                    }</string>
+        </property>
         <property name="text">
          <string>Function3</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="Function4">
+       <spacer name="verticalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item alignment="Qt::AlignHCenter">
+       <widget class="QPushButton" name="reset">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="minimumSize">
          <size>
           <width>0</width>
           <height>40</height>
          </size>
         </property>
+        <property name="maximumSize">
+         <size>
+          <width>100</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="text">
-         <string>Function4</string>
+         <string>Reset</string>
         </property>
        </widget>
       </item>
@@ -1573,63 +1646,56 @@
       <property name="title">
        <string>Function1_config</string>
       </property>
-      <widget class="QScrollBar" name="horizontalScrollBar">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>50</y>
-         <width>181</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-      <widget class="QPlainTextEdit" name="plainTextEdit">
-       <property name="geometry">
-        <rect>
-         <x>200</x>
-         <y>40</y>
-         <width>91</width>
-         <height>41</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QPlainTextEdit" name="plainTextEdit_2">
-       <property name="geometry">
-        <rect>
-         <x>200</x>
-         <y>120</y>
-         <width>91</width>
-         <height>41</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QScrollBar" name="horizontalScrollBar_2">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>130</y>
-         <width>181</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
       <widget class="MyScrollTextBar" name="groupBox">
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>190</y>
+         <y>30</y>
          <width>281</width>
          <height>81</height>
         </rect>
        </property>
        <property name="title">
         <string>config1</string>
+       </property>
+      </widget>
+      <widget class="MyScrollTextBar" name="groupBox_2">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>140</y>
+         <width>281</width>
+         <height>81</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>config2</string>
+       </property>
+      </widget>
+      <widget class="MyScrollTextBar" name="groupBox_3">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>250</y>
+         <width>281</width>
+         <height>81</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>config3</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton">
+       <property name="geometry">
+        <rect>
+         <x>80</x>
+         <y>400</y>
+         <width>112</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>RadioButton</string>
        </property>
       </widget>
      </widget>
@@ -1645,50 +1711,43 @@
       <property name="title">
        <string>Function2_config</string>
       </property>
-      <widget class="QScrollBar" name="horizontalScrollBar_3">
+      <widget class="MyScrollTextBar" name="groupBox_4">
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>50</y>
-         <width>181</width>
-         <height>21</height>
+         <y>30</y>
+         <width>281</width>
+         <height>81</height>
         </rect>
        </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+       <property name="title">
+        <string>config1</string>
        </property>
       </widget>
-      <widget class="QPlainTextEdit" name="plainTextEdit_3">
-       <property name="geometry">
-        <rect>
-         <x>200</x>
-         <y>40</y>
-         <width>91</width>
-         <height>41</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QPlainTextEdit" name="plainTextEdit_4">
-       <property name="geometry">
-        <rect>
-         <x>200</x>
-         <y>120</y>
-         <width>91</width>
-         <height>41</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QScrollBar" name="horizontalScrollBar_4">
+      <widget class="MyScrollTextBar" name="groupBox_5">
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>130</y>
-         <width>181</width>
-         <height>21</height>
+         <y>140</y>
+         <width>281</width>
+         <height>81</height>
         </rect>
        </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+       <property name="title">
+        <string>config2</string>
+       </property>
+      </widget>
+      <widget class="MyScrollTextBar" name="groupBox_6">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>250</y>
+         <width>281</width>
+         <height>81</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>config3</string>
        </property>
       </widget>
      </widget>
@@ -1704,52 +1763,142 @@
       <property name="title">
        <string>Function3_config</string>
       </property>
-      <widget class="QScrollBar" name="horizontalScrollBar_5">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>50</y>
-         <width>181</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-      <widget class="QPlainTextEdit" name="plainTextEdit_5">
-       <property name="geometry">
-        <rect>
-         <x>200</x>
-         <y>40</y>
-         <width>91</width>
-         <height>41</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QPlainTextEdit" name="plainTextEdit_6">
-       <property name="geometry">
-        <rect>
-         <x>200</x>
-         <y>120</y>
-         <width>91</width>
-         <height>41</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QScrollBar" name="horizontalScrollBar_6">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>130</y>
-         <width>181</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <spacer name="verticalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Preferred</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>50</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item alignment="Qt::AlignHCenter">
+        <widget class="QPushButton" name="pushButton">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>200</width>
+           <height>60</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton{
+            border:1px solid rgb(143,143,143); 
+            background-color:white; 
+            color:black;
+            }
+ 
+QPushButton:checked{
+                    border:1px solid rgb(143,143,143); 
+                    background-color:rgb(2,125,180); 
+                    color:white;
+                    }</string>
+         </property>
+         <property name="text">
+          <string>PushButton</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_5">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Minimum</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>50</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item alignment="Qt::AlignHCenter">
+        <widget class="QPushButton" name="pushButton_2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>200</width>
+           <height>60</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton{
+            border:1px solid rgb(143,143,143); 
+            background-color:white; 
+            color:black;
+            }
+
+QPushButton:checked{
+                    border:1px solid rgb(143,143,143); 
+                    background-color:rgb(2,125,180); 
+                    color:white;
+                    }
+</string>
+         </property>
+         <property name="text">
+          <string>PushButton</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_6">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Preferred</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>50</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
      </widget>
     </item>
     <item>
@@ -1763,50 +1912,43 @@
       <property name="title">
        <string>Function4_config</string>
       </property>
-      <widget class="QScrollBar" name="horizontalScrollBar_7">
+      <widget class="MyScrollTextBar" name="groupBox_10">
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>50</y>
-         <width>181</width>
-         <height>21</height>
+         <y>30</y>
+         <width>281</width>
+         <height>81</height>
         </rect>
        </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+       <property name="title">
+        <string>config1</string>
        </property>
       </widget>
-      <widget class="QPlainTextEdit" name="plainTextEdit_7">
-       <property name="geometry">
-        <rect>
-         <x>200</x>
-         <y>40</y>
-         <width>91</width>
-         <height>41</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QPlainTextEdit" name="plainTextEdit_8">
-       <property name="geometry">
-        <rect>
-         <x>200</x>
-         <y>120</y>
-         <width>91</width>
-         <height>41</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QScrollBar" name="horizontalScrollBar_8">
+      <widget class="MyScrollTextBar" name="groupBox_11">
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>130</y>
-         <width>181</width>
-         <height>21</height>
+         <y>140</y>
+         <width>281</width>
+         <height>81</height>
         </rect>
        </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+       <property name="title">
+        <string>config2</string>
+       </property>
+      </widget>
+      <widget class="MyScrollTextBar" name="groupBox_12">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>250</y>
+         <width>281</width>
+         <height>81</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>config3</string>
        </property>
       </widget>
      </widget>

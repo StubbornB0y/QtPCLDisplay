@@ -2,6 +2,7 @@
 #include "./ui_mainwindow.h"
 #include <QLayout>
 #include <QDebug>
+#include <QButtonGroup>
 #include <qpainter.h>
 #include "vtkRenderWindow.h"
 #include <pcl/common/io.h>
@@ -27,6 +28,12 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     this->setWindowTitle("PCLdisplay");
+
+    mainBtnGrp=new QButtonGroup(this);
+    mainBtnGrp->setExclusive(true);
+    mainBtnGrp->addButton(ui->Function1);
+    mainBtnGrp->addButton(ui->Function3);
+
     ui->Function1Config->hide();
     ui->Function2Config->hide();
     ui->Function3Config->hide();

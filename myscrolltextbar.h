@@ -2,7 +2,7 @@
 #define MYSCROLLTEXTBAR_H
 #include <QLayout>
 #include <QScrollBar>
-#include <QPlainTextEdit>
+#include <QLineEdit>
 #include <QGroupBox>
 
 class MyScrollTextBar : public QGroupBox
@@ -12,13 +12,14 @@ public:
     explicit MyScrollTextBar(QWidget *parent = nullptr);
 
     QScrollBar *scrollBar;
-    QPlainTextEdit *plainTextEdit;
+    QLineEdit *lineTextEdit;
 
 signals:
 
 
 private slots:
-    void setPlainText(int a);
+    void setLineText(int a);
+    void setScrollBar(QString a);
 
 private:
     QHBoxLayout *horizontalLayout;
