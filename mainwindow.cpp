@@ -22,6 +22,10 @@
 #include <QVTKOpenGLNativeWidget.h>
 #include <vtkGenericOpenGLRenderWindow.h>
 #include <QVTKOpenGLNativeWidget.h>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <nlohmann/json.hpp>
+using json = nlohmann::json;
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -48,7 +52,7 @@ MainWindow::MainWindow(QWidget *parent)
     viewer.reset(new pcl::visualization::PCLVisualizer(renderer2, renderWindow2, "viewer", false));
     ui->pclwidget->setRenderWindow(viewer->getRenderWindow());
     viewer->setupInteractor(ui->pclwidget->interactor(), ui->pclwidget->renderWindow());
-
+    updateTopic();
 }
 
 MainWindow::~MainWindow()
@@ -150,5 +154,29 @@ void MainWindow::on_Function4_clicked()
     else{
         ui->Function4Config->show();
     }
+}
+
+void MainWindow::updateTopic()
+{
+    json j;
+    j["mode"] = parameter.mode;
+    j["traditionalDetection"]["scheme"] = parameter.traditionalDetection.scheme;
+    j["traditionalDetection"]["voxel"]["gridSize"] = parameter.traditionalDetection.voxel.gridSize;
+    j["traditionalDetection"]["passThroughGrid"]["filterAxis"] = parameter.traditionalDetection.passThroughGrid.filterAxis;
+    j["traditionalDetection"]["passThroughGrid"]["minValue"] = parameter.traditionalDetection.passThroughGrid.minValue;
+    j["traditionalDetection"]["passThroughGrid"]["maxValue"] = parameter.traditionalDetection.passThroughGrid.maxValue;
+    j["traditionalDetection"]["passThroughGrid"]["inOutRange"] = parameter.traditionalDetection.passThroughGrid.inOutRange;
+    j["traditionalDetection"]["planeFitting"]["distanceThreshold"] = parameter.traditionalDetection.planeFitting.distanceThreshold;
+    j["traditionalDetection"]["planeFitting"]["maxIterations"] = parameter.traditionalDetection.planeFitting.maxIterations;
+    j["traditionalDetection"]["planeFitting"]["residualRatio"] = parameter.traditionalDetection.planeFitting.residualRatio;
+    j["traditionalDetection"]["euclideanClustering"]["clusteringRadius"] = parameter.traditionalDetection.euclideanClustering.clusteringRadius;
+    j["traditionalDetection"]["euclideanClustering"]["minClusterSize"] = parameter.traditionalDetection.euclideanClustering.minClusterSize;
+    j["traditionalDetection"]["euclideanClustering"]["maxClusterSize"] = parameter.traditionalDetection.euclideanClustering.maxClusterSize;
+    j["multimodalDetection"]["enableImage"] = parameter.multimodalDetection.enableImage;
+    j["multimodalDetection"]["enablePointCloud"] = parameter.multimodalDetection.enablePointCloud;
+    //std::cout << j.dump(4) << std::endl;
+    std::string json_str = j.dump();
+    std::cout << "Generated JSON string: " << json_str << std::endl;
+
 }
 

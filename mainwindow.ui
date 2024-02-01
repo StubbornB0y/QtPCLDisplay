@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>2260</width>
+    <width>2280</width>
     <height>684</height>
    </rect>
   </property>
@@ -1493,7 +1493,7 @@
        <enum>Qt::Horizontal</enum>
       </property>
       <property name="sizeType">
-       <enum>QSizePolicy::Fixed</enum>
+       <enum>QSizePolicy::Maximum</enum>
       </property>
       <property name="sizeHint" stdset="0">
        <size>
@@ -1525,7 +1525,7 @@
        <widget class="QPushButton" name="Function1">
         <property name="minimumSize">
          <size>
-          <width>0</width>
+          <width>150</width>
           <height>40</height>
          </size>
         </property>
@@ -1567,7 +1567,7 @@ QPushButton:checked{
        <widget class="QPushButton" name="Function3">
         <property name="minimumSize">
          <size>
-          <width>0</width>
+          <width>150</width>
           <height>40</height>
          </size>
         </property>
@@ -1960,7 +1960,7 @@ QPushButton:checked{
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>2260</width>
+     <width>2280</width>
      <height>27</height>
     </rect>
    </property>
