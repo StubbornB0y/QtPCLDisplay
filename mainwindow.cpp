@@ -25,6 +25,7 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <nlohmann/json.hpp>
+#include <QTimer>
 using json = nlohmann::json;
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -38,6 +39,12 @@ MainWindow::MainWindow(QWidget *parent)
     mainBtnGrp->addButton(ui->Function1);
     mainBtnGrp->addButton(ui->Function3);
 
+    traBtnGrp=new QButtonGroup(this);
+    traBtnGrp->setExclusive(true);
+    traBtnGrp->addButton(ui->scheme1);
+    traBtnGrp->addButton(ui->scheme2);
+
+    ui->automaticROI->hide();
     ui->Function1Config->hide();
     ui->Function2Config->hide();
     ui->Function3Config->hide();
@@ -53,6 +60,13 @@ MainWindow::MainWindow(QWidget *parent)
     ui->pclwidget->setRenderWindow(viewer->getRenderWindow());
     viewer->setupInteractor(ui->pclwidget->interactor(), ui->pclwidget->renderWindow());
     updateTopic();
+    //测试帧数工具，每隔1ms载入点云图像，实测600多帧
+    /*
+    QTimer *timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(test()));// slotCountMessage是我们需要执行的响应函数
+    timer->start(1); // 每隔1s
+    */
+
 }
 
 MainWindow::~MainWindow()
@@ -111,20 +125,6 @@ void MainWindow::on_Function1_clicked()
 }
 
 
-void MainWindow::on_Function2_clicked()
-{
-    QWidget* widgetsToHide[] = { ui->Function1Config, ui->Function3Config, ui->Function4Config };
-    int size=sizeof(widgetsToHide) / sizeof(QWidget*);
-    Hide(widgetsToHide,size);
-    if(ui->Function2Config->isVisible())
-    {
-        ui->Function2Config->hide();
-    }
-    else{
-        ui->Function2Config->show();
-    }
-
-}
 
 
 void MainWindow::on_Function3_clicked()
@@ -132,6 +132,8 @@ void MainWindow::on_Function3_clicked()
     QWidget* widgetsToHide[] = { ui->Function1Config, ui->Function2Config, ui->Function4Config };
     int size=sizeof(widgetsToHide) / sizeof(QWidget*);
     Hide(widgetsToHide,size);
+    ui->scheme1->setChecked(false);
+    ui->scheme2->setChecked(false);
     if(ui->Function3Config->isVisible())
     {
         ui->Function3Config->hide();
@@ -141,20 +143,6 @@ void MainWindow::on_Function3_clicked()
     }
 }
 
-
-void MainWindow::on_Function4_clicked()
-{
-    QWidget* widgetsToHide[] = { ui->Function1Config, ui->Function2Config, ui->Function3Config };
-    int size=sizeof(widgetsToHide) / sizeof(QWidget*);
-    Hide(widgetsToHide,size);
-    if(ui->Function4Config->isVisible())
-    {
-        ui->Function4Config->hide();
-    }
-    else{
-        ui->Function4Config->show();
-    }
-}
 
 void MainWindow::updateTopic()
 {
@@ -174,9 +162,67 @@ void MainWindow::updateTopic()
     j["traditionalDetection"]["euclideanClustering"]["maxClusterSize"] = parameter.traditionalDetection.euclideanClustering.maxClusterSize;
     j["multimodalDetection"]["enableImage"] = parameter.multimodalDetection.enableImage;
     j["multimodalDetection"]["enablePointCloud"] = parameter.multimodalDetection.enablePointCloud;
+    j["multimodalDetection"]["automaticROI"] = parameter.multimodalDetection.automaticROI;
     //std::cout << j.dump(4) << std::endl;
     std::string json_str = j.dump();
     std::cout << "Generated JSON string: " << json_str << std::endl;
 
+}
+
+void MainWindow::test(){
+    if(pcl::io::loadPCDFile("/home/user/Desktop/testpcd/000038.pcd", *cloud)!=-1)
+    {
+        ui->PCLwidget_text->hide();
+        ui->state_text->setText("Read succeed");
+    }
+    else
+    {
+        ui->state_text->setText("Open file Failed!");
+    }
+    ui->pclwidget->renderWindow()->Render();
+
+    viewer->removeAllPointClouds();
+    viewer->addPointCloud<pcl::PointXYZI>(cloud, "sample cloud");
+    viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "sample cloud");
+    ui->pclwidget->update();
+}
+
+
+void MainWindow::on_enablePointCloud_toggled(bool checked)
+{
+    qDebug()<<checked;
+    if (checked)
+    {
+        parameter.multimodalDetection.enablePointCloud = 1;
+        ui->automaticROI->show();
+    }
+    else{
+        parameter.multimodalDetection.enablePointCloud = 0;
+        ui->automaticROI->hide();
+    }
+    updateTopic();
+}
+
+
+void MainWindow::on_scheme1_toggled(bool checked)
+{
+    if (checked)
+    {
+        ui->planeFitting->hide();
+        ui->Function2Config->show();
+        ui->passThroughGrid->show();
+
+    }
+}
+
+
+void MainWindow::on_scheme2_toggled(bool checked)
+{
+    if (checked)
+    {
+        ui->passThroughGrid->hide();
+        ui->Function2Config->show();
+        ui->planeFitting->show();
+    }
 }
 

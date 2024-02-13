@@ -19,7 +19,8 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     QButtonGroup *mainBtnGrp;
-
+    QButtonGroup *traBtnGrp;
+    //储存json的结构体
     struct Topicparameter{
         int mode = 0;
         struct {
@@ -47,22 +48,28 @@ public:
         struct {
             int enableImage = 0;
             int enablePointCloud = 0;
+            int automaticROI = 0;
         } multimodalDetection;
 
     }parameter;
 
 public slots:
     void updateTopic();
+    void test();
 private slots:
     void getPCDFile();
 
     void on_Function1_clicked();
 
-    void on_Function2_clicked();
 
     void on_Function3_clicked();
 
-    void on_Function4_clicked();
+
+    void on_enablePointCloud_toggled(bool checked);
+
+    void on_scheme1_toggled(bool checked);
+
+    void on_scheme2_toggled(bool checked);
 
 private:
     Ui::MainWindow *ui;

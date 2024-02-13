@@ -47,3 +47,10 @@ void MyScrollTextBar::setScrollBar(QString a)
     }
 
 }
+
+void MyScrollTextBar::setDouble(bool enabled){
+    is_double = enabled;
+    if(is_double){
+
+    }
+}

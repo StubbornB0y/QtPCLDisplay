@@ -8,10 +8,25 @@ set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
+set(catkin_DIR "/opt/ros/noetic/share/catkin/cmake")
 set(VTK_DIR "/usr/local/include/vtk-9.3")
 set(PCL_INCLUDE_DIRS "/usr/local/include/pcl-1.13")
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
+#[[
+find_package(catkin REQUIRED COMPONENTS
+  roscpp
+  #rospy
+  std_msgs
+  cv_bridge
+  image_transport
+  sensor_msgs
+  geometry_msgs
+  message_filters
+  pcl_conversions
+  pcl_ros
+  message_generation
+)
+]]
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS OpenGLWidgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 #find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS OpenGLWidgets REQUIRED)
@@ -38,6 +53,9 @@ if (NOT VTK_FOUND)
   message("Skipping example: ${VTK_NOT_FOUND_MESSAGE}")
   return ()
 endif ()
+
+include_directories(include ${catkin_INCLUDE_DIRS} )
+include_directories(${catkin_DIR})
 include_directories(./)
 #include_directories(/usr/local/include/vtk-9.3)
 include_directories(${VTK_INCLUDE_DIRS})
@@ -88,6 +106,7 @@ target_link_libraries(Display
     ${PCL_COMMON_LIBRARIES}
     ${PCL_IO_LIBRARIES}
     ${VTK_LIBRARIES}
+    ${catkin_LIBRARIES}
     Qt${QT_VERSION_MAJOR}::Widgets
     Qt${QT_VERSION_MAJOR}::OpenGLWidgets)
 #target_link_libraries(Display PRIVATE Qt${QT_VERSION_MAJOR}::OpenGLWidgets)
