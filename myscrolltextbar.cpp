@@ -11,40 +11,65 @@ MyScrollTextBar::MyScrollTextBar(QWidget *parent) : QGroupBox(parent)
     horizontalLayout = new QHBoxLayout(this);
     scrollBar = new QScrollBar(this);
     scrollBar->setMinimumSize(QSize(181, 20));
-    scrollBar->setBaseSize(QSize(0, 0));
+    scrollBar->setMaximumSize(QSize(181, 20));
     scrollBar->setOrientation(Qt::Horizontal);
     horizontalLayout->addWidget(scrollBar);
     lineTextEdit = new QLineEdit(this);
     horizontalLayout->addWidget(lineTextEdit);
     connect(scrollBar,SIGNAL(sliderMoved(int)), this,SLOT(setLineText(int)));
-    connect(lineTextEdit,SIGNAL(textEdited(QString)),this,SLOT(setScrollBar(QString)));
+    connect(lineTextEdit, SIGNAL(textEdited(QString)), this, SLOT(setScrollBar(QString)));
+    connect(lineTextEdit, SIGNAL(textChanged(QString)), this, SLOT(emitSignal(QString)));
 }
 
 void MyScrollTextBar::setLineText(int a)
 {
     qDebug()<<a;
-    float display_number=float(a);
-    lineTextEdit->setText(QString::number(display_number,'f',2));
+    if(is_double)
+    {
+        double display_number=double(a)/scale;
+        lineTextEdit->setText(QString::number(display_number,'f',2));
+    }
+    else
+    {
+        lineTextEdit->setText(QString::number(a));
+    }
 }
 
 void MyScrollTextBar::setScrollBar(QString a)
 {
     qDebug()<<a;
     bool ok;
-    float middleValue = a.toFloat(&ok);
-
-    if(!ok){
-        qDebug()<<"Invalid input!";
+    double middleValue;
+    int scrollValue;
+    
+    if(is_double){
+        middleValue = a.toDouble(&ok);
+        if(!ok){
+            qDebug()<<"Invalid input!";
+        }
+        else{
+            scrollValue = int(middleValue*scale);
+            scrollBar->setValue(scrollValue);
+        }
     }
     else{
-        int scrollValue=int(middleValue);
-        if(scrollValue<=0 || scrollValue>99){
-            qDebug()<<"Out of range!!";
+        scrollValue = a.toInt(&ok);
+        if(!ok){
+            qDebug()<<"Invalid input!";
         }
         else{
             scrollBar->setValue(scrollValue);
         }
     }
+    
+    /*如果有需要溢出监测 取消注释此段并替换
+    if(scrollValue < scrollBar->minimum() || scrollValue > scrollBar->maximum()){
+        qDebug()<<"Out of range!!";
+    }
+    else{
+        scrollBar->setValue(scrollValue);
+    }*/
+    
 
 }
 
@@ -54,3 +79,38 @@ void MyScrollTextBar::setDouble(bool enabled){
 
     }
 }
+
+void MyScrollTextBar::emitSignal(QString text){
+    bool ok;
+    if(is_double)
+    {
+        double transValue_double = text.toDouble(&ok);
+        if(ok)
+        {
+            emit changedSignal_double(transValue_double);
+            qDebug()<<"double have been emited";
+        }
+        else
+        {
+            qDebug()<<"Transform error, invalid input!";
+        }
+    }
+    else{
+        int transValue_int = text.toInt(&ok);
+        if(ok)
+        {
+            emit changedSignal_int(transValue_int);
+            qDebug()<<"int have been emited";
+        }
+        else
+        {
+            qDebug()<<"Transform error, invalid input!";
+        }
+    }
+}
+
+void MyScrollTextBar::setRange(double min_value, double max_value)
+{
+    scrollBar->setRange(int(min_value * scale), int(max_value * scale));
+}
+

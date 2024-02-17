@@ -16,8 +16,7 @@ public:
     void setScale(double Scale){this->scale=Scale;}
     const double getScale(){return scale;}
 
-    void setMaxValue(double max_value);
-    void setMinValue(double min_value);
+    void setRange(double min_value, double max_value);
     QScrollBar *scrollBar;
     QLineEdit *lineTextEdit;
 
@@ -26,13 +25,14 @@ signals:
     void changedSignal_int(int a);
 
 private slots:
+    void emitSignal(QString text);
     void setLineText(int a);
     void setScrollBar(QString a);
 
 private:
 
     bool is_double = false;     //设置是int显示还是double显示
-    double scale = 1;
+    double scale = 100;   //如果启用double表示，为scrollbar的int和Linetext的double文本做比例切换 默认100 
     QHBoxLayout *horizontalLayout;
 
 };
