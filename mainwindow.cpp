@@ -34,6 +34,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     this->setWindowTitle("PCLdisplay");
 
+    connectAssembly();
+
     mainBtnGrp=new QButtonGroup(this);
     mainBtnGrp->setExclusive(true);
     mainBtnGrp->addButton(ui->Function1);
@@ -187,7 +189,6 @@ void MainWindow::test(){
     ui->pclwidget->update();
 }
 
-
 void MainWindow::on_enablePointCloud_toggled(bool checked)
 {
     qDebug()<<checked;
@@ -224,5 +225,100 @@ void MainWindow::on_scheme2_toggled(bool checked)
         ui->Function2Config->show();
         ui->planeFitting->show();
     }
+}
+
+
+void MainWindow::connectAssembly()
+{
+    ui->gridSize->setDouble(true);
+    ui->gridSize->setRange(0.01,1.0);
+    ui->gridSize->initScrollBar(0.2);
+    connect(ui->gridSize, changedSignal_double(double), this, setGridSize(double));
+
+    ui->ptg_minValue->setDouble(true);
+    ui->ptg_minValue->setRange(-100.0, -1.0);
+    ui->ptg_minValue->initScrollBar(-10.0);
+    connect(ui->ptg_minValue, changedSignal_double(double), this, setMinValue(double));
+}
+
+
+void MainWindow::setMode(int mode)
+{
+    parameter.mode = mode;
+}
+
+void MainWindow::setScheme(int scheme)
+{
+    parameter.traditionalDetection.scheme=scheme;
+}
+
+void MainWindow::setGridSize(double grid)
+{
+    parameter.traditionalDetection.voxel.gridSize = grid;
+}
+
+void MainWindow::setFilterAxis(std::string filterAxis)
+{
+    parameter.traditionalDetection.passThroughGrid.filterAxis = filterAxis;
+}
+
+void MainWindow::setMinValue(double min)
+{
+    parameter.traditionalDetection.passThroughGrid.minValue = min;
+}
+
+void MainWindow::setMaxValue(double max)
+{
+    parameter.traditionalDetection.passThroughGrid.maxValue = max;
+}
+
+void MainWindow::setInOutRange(bool inOutRange)
+{
+    parameter.traditionalDetection.passThroughGrid.inOutRange = inOutRange;
+}
+
+void MainWindow::setDistanceThreshold(double distanceThreshold)
+{
+    parameter.traditionalDetection.planeFitting.distanceThreshold = distanceThreshold;
+}
+
+void MainWindow::setMaxIterationse(int maxIterations)
+{
+    parameter.traditionalDetection.planeFitting.maxIterations = maxIterations；
+}
+
+void MainWindow::setResidualRatio(double residualRatio)
+{
+    parameter.traditionalDetection.planeFitting.residualRatio =residualRatio;
+}
+
+void MainWindow::setClusteringRadius(double clusteringRadius)
+{
+    parameter.traditionalDetection.euclideanClustering.clusteringRadius = clusteringRadius;
+}
+
+void MainWindow::setMinClusterSize(int minClusterSize)
+{
+    parameter.traditionalDetection.euclideanClustering.minClusterSize = minClusterSize;
+}
+
+void MainWindow::setMaxClusterSize(int maxClusterSize)
+{
+    parameter.traditionalDetection.euclideanClustering.maxClusterSize = maxClusterSize;
+}
+
+void MainWindow::setEnableImage(int enableImage)
+{
+    parameter.multimodalDetection.enableImage = enableImage;
+}
+
+void MainWindow::setEnablePointCloud(int enablePointCloud)
+{
+    parameter.multimodalDetection.enablePointCloud = enablePointCloud;
+}
+
+void MainWindow::setAutomaticROI(int automaticROI)
+{
+    parameter.multimodalDetection.automaticROI = automaticROI;
 }
 

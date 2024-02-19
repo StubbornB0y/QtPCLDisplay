@@ -56,6 +56,24 @@ public:
 public slots:
     void updateTopic();
     void test();
+
+
+    void setMode(int mode);
+    void setScheme(int scheme);
+    void setGridSize(double grid);
+    void setFilterAxis(std::string filterAxis);
+    void setMinValue(double min);
+    void setMaxValue(double max);
+    void setInOutRange(bool inOutRange);
+    void setDistanceThreshold(double distanceThreshold);
+    void setMaxIterationse(int maxIterations);
+    void setResidualRatio(double residualRatio);
+    void setClusteringRadius(double clusteringRadius);
+    void setMinClusterSize(int minClusterSize);
+    void setMaxClusterSize(int maxClusterSize);
+    void setEnableImage(int enableImage);
+    void setEnablePointCloud(int enablePointCloud);
+    void setAutomaticROI(int automaticROI);
 private slots:
     void getPCDFile();
 
@@ -76,6 +94,9 @@ private:
     pcl::visualization::PCLVisualizer::Ptr viewer;
     pcl::PointCloud<pcl::PointXYZI>::Ptr cloud;
     void Hide(QWidget* WidgetToHide[], int size);
+    
+     //连接各个组件的信号和对应的槽，并初始化其他组件的初值
+    void connectAssembly();
 };
 
 #endif // MAINWINDOW_H
