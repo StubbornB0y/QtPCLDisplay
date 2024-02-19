@@ -49,7 +49,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->automaticROI->hide();
     ui->Function1Config->hide();
     ui->Function2Config->hide();
-    ui->Function3Config->hide();
+    ui->multimodal->hide();
     ui->Function4Config->hide();
     layout()->setSizeConstraint(QLayout::SetFixedSize);
     qDebug()<<this->size();
@@ -112,7 +112,7 @@ void MainWindow::getPCDFile()
 //编辑槽函数：点击时显示对应的bar，再点一下隐藏
 void MainWindow::on_Function1_clicked()
 {
-    QWidget* widgetsToHide[] = { ui->Function2Config, ui->Function3Config, ui->Function4Config };
+    QWidget* widgetsToHide[] = { ui->Function2Config, ui->multimodal, ui->Function4Config };
     int size=sizeof(widgetsToHide) / sizeof(QWidget*);
 //    qDebug<<sizeof(widgetsToHide) <<sizeof(QWidget*);
     Hide(widgetsToHide,size);
@@ -136,12 +136,12 @@ void MainWindow::on_Function3_clicked()
     Hide(widgetsToHide,size);
     ui->scheme1->setChecked(false);
     ui->scheme2->setChecked(false);
-    if(ui->Function3Config->isVisible())
+    if(ui->multimodal->isVisible())
     {
-        ui->Function3Config->hide();
+        ui->multimodal->hide();
     }
     else{
-        ui->Function3Config->show();
+        ui->multimodal->show();
     }
 }
 
@@ -233,12 +233,12 @@ void MainWindow::connectAssembly()
     ui->gridSize->setDouble(true);
     ui->gridSize->setRange(0.01,1.0);
     ui->gridSize->initScrollBar(0.2);
-    connect(ui->gridSize, changedSignal_double(double), this, setGridSize(double));
+    connect(ui->gridSize, SIGNAL(changedSignal_double(double)), this, SLOT(setGridSize(double)));
 
     ui->ptg_minValue->setDouble(true);
     ui->ptg_minValue->setRange(-100.0, -1.0);
     ui->ptg_minValue->initScrollBar(-10.0);
-    connect(ui->ptg_minValue, changedSignal_double(double), this, setMinValue(double));
+    connect(ui->ptg_minValue, SIGNAL(changedSignal_double(double)), this, SLOT(setMinValue(double)));
 }
 
 
@@ -284,7 +284,7 @@ void MainWindow::setDistanceThreshold(double distanceThreshold)
 
 void MainWindow::setMaxIterationse(int maxIterations)
 {
-    parameter.traditionalDetection.planeFitting.maxIterations = maxIterations；
+    parameter.traditionalDetection.planeFitting.maxIterations = maxIterations;
 }
 
 void MainWindow::setResidualRatio(double residualRatio)
