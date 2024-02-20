@@ -17,6 +17,7 @@ public:
     const double getScale(){return scale;}
 
     void setRange(double min_value, double max_value);
+    void setRange(int min_value, int max_value);
 
     void initScrollBar(int value);
     void initScrollBar(double value);

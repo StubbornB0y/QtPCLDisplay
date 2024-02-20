@@ -114,6 +114,11 @@ void MyScrollTextBar::setRange(double min_value, double max_value)
     scrollBar->setRange(int(min_value * scale), int(max_value * scale));
 }
 
+void MyScrollTextBar::setRange(int min_value, int max_value)
+{
+    scrollBar->setRange(min_value, max_value);
+}
+
 void MyScrollTextBar::initScrollBar(int value)
 {
     scrollBar->setValue(value);

@@ -1709,7 +1709,7 @@ QPushButton:checked{
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
-           <widget class="QGroupBox" name="groupBox_2">
+           <widget class="QGroupBox" name="fliterAxis">
             <property name="title">
              <string>过滤轴</string>
             </property>
@@ -1768,7 +1768,7 @@ QPushButton:checked{
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="checkBox">
+           <widget class="QCheckBox" name="inOutRange">
             <property name="text">
              <string>范围内外</string>
             </property>
@@ -1813,7 +1813,7 @@ QPushButton:checked{
            </widget>
           </item>
           <item>
-           <widget class="MyScrollTextBar" name="residualRadio">
+           <widget class="MyScrollTextBar" name="residualRatio">
             <property name="minimumSize">
              <size>
               <width>261</width>
@@ -1835,7 +1835,7 @@ QPushButton:checked{
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
-           <widget class="MyScrollTextBar" name="groupBox_13">
+           <widget class="MyScrollTextBar" name="clusteringRadius">
             <property name="minimumSize">
              <size>
               <width>261</width>
@@ -1848,7 +1848,7 @@ QPushButton:checked{
            </widget>
           </item>
           <item>
-           <widget class="MyScrollTextBar" name="groupBox_8">
+           <widget class="MyScrollTextBar" name="minClusterSize">
             <property name="minimumSize">
              <size>
               <width>261</width>
@@ -1861,7 +1861,7 @@ QPushButton:checked{
            </widget>
           </item>
           <item>
-           <widget class="MyScrollTextBar" name="groupBox_9">
+           <widget class="MyScrollTextBar" name="maxClusterSize">
             <property name="minimumSize">
              <size>
               <width>261</width>

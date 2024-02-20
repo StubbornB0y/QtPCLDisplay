@@ -33,7 +33,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     this->setWindowTitle("PCLdisplay");
-
+    resetButton();
     connectAssembly();
 
     mainBtnGrp=new QButtonGroup(this);
@@ -46,11 +46,7 @@ MainWindow::MainWindow(QWidget *parent)
     traBtnGrp->addButton(ui->scheme1);
     traBtnGrp->addButton(ui->scheme2);
 
-    ui->automaticROI->hide();
-    ui->Function1Config->hide();
-    ui->Function2Config->hide();
-    ui->multimodal->hide();
-    ui->Function4Config->hide();
+    
     layout()->setSizeConstraint(QLayout::SetFixedSize);
     qDebug()<<this->size();
     //pcl::visualization::PCLVisualizer::Ptr viewer;
@@ -119,11 +115,20 @@ void MainWindow::on_Function1_clicked()
     if(ui->Function1Config->isVisible())
     {
         ui->Function1Config->hide();
+        qDebug()<<ui->Function1->isChecked();
     }
     else{
         ui->Function1Config->show();
+        if(ui->scheme1->isChecked() || ui->scheme2->isChecked()){
+            ui->Function2Config->show();
+        }
     }
-
+    if(ui->Function1->isChecked()){
+        setMode(1);
+    }
+    else if(ui->Function1->isChecked() == false &&ui->Function3->isChecked() == false){
+        setMode(0);
+    }
 }
 
 
@@ -139,9 +144,17 @@ void MainWindow::on_Function3_clicked()
     if(ui->multimodal->isVisible())
     {
         ui->multimodal->hide();
+
     }
     else{
         ui->multimodal->show();
+    }
+
+    if(ui->Function3->isChecked()){
+        setMode(2);
+    }
+    else if(ui->Function1->isChecked() == false && ui->Function3->isChecked() == false){
+        setMode(0);
     }
 }
 
@@ -194,11 +207,11 @@ void MainWindow::on_enablePointCloud_toggled(bool checked)
     qDebug()<<checked;
     if (checked)
     {
-        parameter.multimodalDetection.enablePointCloud = 1;
+        setEnablePointCloud(1);
         ui->automaticROI->show();
     }
     else{
-        parameter.multimodalDetection.enablePointCloud = 0;
+        setEnablePointCloud(0);
         ui->automaticROI->hide();
     }
     updateTopic();
@@ -212,7 +225,7 @@ void MainWindow::on_scheme1_toggled(bool checked)
         ui->planeFitting->hide();
         ui->Function2Config->show();
         ui->passThroughGrid->show();
-
+        setScheme(1);
     }
 }
 
@@ -224,21 +237,120 @@ void MainWindow::on_scheme2_toggled(bool checked)
         ui->passThroughGrid->hide();
         ui->Function2Config->show();
         ui->planeFitting->show();
+        setScheme(2);
     }
 }
 
-
-void MainWindow::connectAssembly()
+void MainWindow::resetButton()
 {
+    ui->automaticROI->hide();
+    ui->Function1Config->hide();
+    ui->Function2Config->hide();
+    ui->multimodal->hide();
+    ui->Function4Config->hide();
+
+    parameter.mode = 0;
+    
+    // 重置 traditionalDetection 成员变量
+    parameter.traditionalDetection.scheme = 1;
+    parameter.traditionalDetection.voxel.gridSize = 0.1;
+    parameter.traditionalDetection.passThroughGrid.filterAxis = "z";
+    parameter.traditionalDetection.passThroughGrid.minValue = -10.0;
+    parameter.traditionalDetection.passThroughGrid.maxValue = -1.2;
+    parameter.traditionalDetection.passThroughGrid.inOutRange = true;
+    parameter.traditionalDetection.planeFitting.distanceThreshold = 0.2;
+    parameter.traditionalDetection.planeFitting.maxIterations = 100;
+    parameter.traditionalDetection.planeFitting.residualRatio = 0.9;
+    parameter.traditionalDetection.euclideanClustering.clusteringRadius = 2.0;
+    parameter.traditionalDetection.euclideanClustering.minClusterSize = 50;
+    parameter.traditionalDetection.euclideanClustering.maxClusterSize = 25000;
+
+    // 重置 multimodalDetection 成员变量
+    parameter.multimodalDetection.enableImage = 0;
+    parameter.multimodalDetection.enablePointCloud = 0;
+    parameter.multimodalDetection.automaticROI = 0;
+
+    //mode
+    ui->Function1->setChecked(false);
+    ui->Function3->setChecked(false);
+
+    //voxel
     ui->gridSize->setDouble(true);
-    ui->gridSize->setRange(0.01,1.0);
-    ui->gridSize->initScrollBar(0.2);
-    connect(ui->gridSize, SIGNAL(changedSignal_double(double)), this, SLOT(setGridSize(double)));
+    ui->gridSize->setRange(0.01,100.0);
+    ui->gridSize->initScrollBar(0.1);
+    ui->gridSize->lineTextEdit->setText(QString::number(0.1,'f',2));
+
+    //passThroughGrid
+    ui->radioButton_z->setChecked(true);
+    ui->radioButton_y->setChecked(false);
+    ui->radioButton_x->setChecked(false);
 
     ui->ptg_minValue->setDouble(true);
     ui->ptg_minValue->setRange(-100.0, -1.0);
     ui->ptg_minValue->initScrollBar(-10.0);
+    ui->ptg_minValue->lineTextEdit->setText(QString::number(-10.0,'f',2));
+
+    ui->ptg_maxValue->setDouble(true);
+    ui->ptg_maxValue->setRange(-10.0, 100.0);
+    ui->ptg_maxValue->initScrollBar(-1.2);
+    ui->ptg_maxValue->lineTextEdit->setText(QString::number(-1.2,'f',2));
+
+    ui->inOutRange->setChecked(false);
+    //planeFitting
+    ui->distanceThreshold->setDouble(true);
+    ui->distanceThreshold->setRange(0.01,10.0);
+    ui->distanceThreshold->initScrollBar(0.2);
+    ui->distanceThreshold->lineTextEdit->setText(QString::number(0.2,'f',2));
+
+    ui->maxIterations->setDouble(false);
+    ui->maxIterations->setRange(10,10000);
+    ui->maxIterations->initScrollBar(100);
+    ui->maxIterations->lineTextEdit->setText(QString::number(100));
+
+    ui->residualRatio->setDouble(true);
+    ui->residualRatio->setRange(0.01,1.0);
+    ui->residualRatio->initScrollBar(0.9);
+    ui->residualRatio->lineTextEdit->setText(QString::number(0.9,'f',2));
+
+    //euclidean
+    ui->clusteringRadius->setDouble(true);
+    ui->clusteringRadius->setRange(0.1,100.0);
+    ui->clusteringRadius->initScrollBar(2.0);
+    ui->clusteringRadius->lineTextEdit->setText(QString::number(2.0,'f',2));
+
+    ui->minClusterSize->setDouble(false);
+    ui->minClusterSize->setRange(10,1000);
+    ui->minClusterSize->initScrollBar(50);
+    ui->minClusterSize->lineTextEdit->setText(QString::number(50));
+
+    ui->maxClusterSize->setDouble(false);
+    ui->maxClusterSize->setRange(500,100000);
+    ui->maxClusterSize->initScrollBar(25000);
+    ui->maxClusterSize->lineTextEdit->setText(QString::number(25000));
+
+    //multimodalDetection
+    ui->enableImage->setChecked(false);
+    ui->enablePointCloud->setChecked(false);
+    ui->automaticROI->setChecked(false);
+}
+
+void MainWindow::connectAssembly()
+{
+    connect(ui->reset, SIGNAL(clicked()), this, SLOT(resetButton()));
+
+    connect(ui->gridSize, SIGNAL(changedSignal_double(double)), this, SLOT(setGridSize(double)));
+
     connect(ui->ptg_minValue, SIGNAL(changedSignal_double(double)), this, SLOT(setMinValue(double)));
+    connect(ui->ptg_maxValue, SIGNAL(changedSignal_double(double)), this, SLOT(setMaxValue(double)));
+
+    connect(ui->distanceThreshold, SIGNAL(changedSignal_double(double)), this, SLOT(setDistanceThreshold(double)));
+    connect(ui->maxIterations, SIGNAL(changedSignal_int(int)), this, SLOT(setMaxIterationse(int)));
+    connect(ui->residualRatio, SIGNAL(changedSignal_double(double)), this, SLOT(setResidualRatio(double)));
+
+    connect(ui->clusteringRadius, SIGNAL(changedSignal_double(double)), this, SLOT(setClusteringRadius(double)));
+    connect(ui->minClusterSize, SIGNAL(changedSignal_int(int)), this, SLOT(setMinClusterSize(int)));
+    connect(ui->maxClusterSize, SIGNAL(changedSignal_int(int)), this, SLOT(setMaxClusterSize(int)));
+
 }
 
 
@@ -255,6 +367,7 @@ void MainWindow::setScheme(int scheme)
 void MainWindow::setGridSize(double grid)
 {
     parameter.traditionalDetection.voxel.gridSize = grid;
+    updateTopic();
 }
 
 void MainWindow::setFilterAxis(std::string filterAxis)
@@ -320,5 +433,61 @@ void MainWindow::setEnablePointCloud(int enablePointCloud)
 void MainWindow::setAutomaticROI(int automaticROI)
 {
     parameter.multimodalDetection.automaticROI = automaticROI;
+}
+
+
+void MainWindow::on_radioButton_z_toggled(bool checked)
+{
+    if(checked){
+        setFilterAxis("z");
+    }
+}
+
+
+void MainWindow::on_radioButton_y_toggled(bool checked)
+{
+    if(checked){
+        setFilterAxis("y");
+    }
+}
+
+
+void MainWindow::on_radioButton_x_toggled(bool checked)
+{
+    if(checked){
+        setFilterAxis("x");
+    }
+}
+
+void MainWindow::on_inOutRange_toggled(bool checked)
+{
+    if(checked){
+        setInOutRange(true);
+    }
+    else{
+        setInOutRange(false);
+    }
+}
+
+
+void MainWindow::on_enableImage_toggled(bool checked)
+{
+    if(checked){
+        setEnableImage(1);
+    }
+    else{
+        setEnableImage(0);
+    }
+}
+
+
+void MainWindow::on_automaticROI_toggled(bool checked)
+{
+    if(checked){
+        setAutomaticROI(1);
+    }
+    else{
+        setAutomaticROI(0);
+    }
 }
 

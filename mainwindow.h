@@ -75,19 +75,31 @@ public slots:
     void setEnablePointCloud(int enablePointCloud);
     void setAutomaticROI(int automaticROI);
 private slots:
+    void resetButton();
+
     void getPCDFile();
 
     void on_Function1_clicked();
 
-
     void on_Function3_clicked();
-
 
     void on_enablePointCloud_toggled(bool checked);
 
     void on_scheme1_toggled(bool checked);
 
     void on_scheme2_toggled(bool checked);
+
+    void on_radioButton_z_toggled(bool checked);
+
+    void on_radioButton_y_toggled(bool checked);
+
+    void on_radioButton_x_toggled(bool checked);
+
+    void on_inOutRange_toggled(bool checked);
+
+    void on_enableImage_toggled(bool checked);
+
+    void on_automaticROI_toggled(bool checked);
 
 private:
     Ui::MainWindow *ui;
