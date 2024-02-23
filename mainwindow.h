@@ -3,6 +3,8 @@
 
 #include <pcl/visualization/pcl_visualizer.h>
 
+#include "sensor_msgs/PointCloud2.h"
+
 #include <QMainWindow>
 #include <QButtonGroup>
 QT_BEGIN_NAMESPACE
@@ -18,6 +20,8 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    void point_cloud_sub_callback(const sensor_msgs::PointCloud2ConstPtr& cloud);
+
     QButtonGroup *mainBtnGrp;
     QButtonGroup *traBtnGrp;
     //储存json的结构体
@@ -56,7 +60,7 @@ public:
 public slots:
     void updateTopic();
     void test();
-
+    void callbackSpin();
 
     void setMode(int mode);
     void setScheme(int scheme);
@@ -103,12 +107,16 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+
     pcl::visualization::PCLVisualizer::Ptr viewer;
     pcl::PointCloud<pcl::PointXYZI>::Ptr cloud;
+
     void Hide(QWidget* WidgetToHide[], int size);
     
      //连接各个组件的信号和对应的槽，并初始化其他组件的初值
     void connectAssembly();
+
+    
 };
 
 #endif // MAINWINDOW_H

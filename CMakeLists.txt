@@ -12,21 +12,19 @@ set(catkin_DIR "/opt/ros/noetic/share/catkin/cmake")
 set(VTK_DIR "/usr/local/include/vtk-9.3")
 set(PCL_INCLUDE_DIRS "/usr/local/include/pcl-1.13")
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
-#[[
+
 find_package(catkin REQUIRED COMPONENTS
   roscpp
-  #rospy
+  rospy
   std_msgs
-  cv_bridge
-  image_transport
+  rviz
+  #pcl_conversions
+  #pcl_ros
   sensor_msgs
-  geometry_msgs
-  message_filters
-  pcl_conversions
-  pcl_ros
   message_generation
+  visualization_msgs
 )
-]]
+
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS OpenGLWidgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 #find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS OpenGLWidgets REQUIRED)
@@ -43,7 +41,7 @@ find_package(VTK 9.3.0 REQUIRED COMPONENTS
 #file(GLOB PCL_LIBRARIES /usr/local/lib/libpcl_*)
 #set(PCL_INCLUDE_DIRS /usr/local/include/pcl-1.11)
 
-find_package(PCL 1.13 REQUIRED COMPONENTS
+find_package(PCL REQUIRED COMPONENTS
     common
     visualization
     io

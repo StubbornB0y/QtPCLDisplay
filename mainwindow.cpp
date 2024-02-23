@@ -5,8 +5,12 @@
 #include <QButtonGroup>
 #include <qpainter.h>
 #include "vtkRenderWindow.h"
+
+#include <pcl_conversions/pcl_conversions.h> 
+#include <pcl/conversions.h>   
+#include <pcl_ros/transforms.h>
 #include <pcl/common/io.h>
-#include <pcl/io/io.h>
+//#include <pcl/io/io.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/obj_io.h>
 #include <pcl/PolygonMesh.h>
@@ -26,6 +30,10 @@
 #include <QJsonDocument>
 #include <nlohmann/json.hpp>
 #include <QTimer>
+
+#include "ros/ros.h"
+#include "std_msgs/String.h"
+extern ros::Publisher pubParameter;
 using json = nlohmann::json;
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -33,8 +41,6 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     this->setWindowTitle("PCLdisplay");
-    resetButton();
-    connectAssembly();
 
     mainBtnGrp=new QButtonGroup(this);
     mainBtnGrp->setExclusive(true);
@@ -45,11 +51,11 @@ MainWindow::MainWindow(QWidget *parent)
     traBtnGrp->setExclusive(true);
     traBtnGrp->addButton(ui->scheme1);
     traBtnGrp->addButton(ui->scheme2);
+    resetButton();
+    connectAssembly();
 
-    
     layout()->setSizeConstraint(QLayout::SetFixedSize);
     qDebug()<<this->size();
-    //pcl::visualization::PCLVisualizer::Ptr viewer;
     cloud=pcl::PointCloud<pcl::PointXYZI>::Ptr(new pcl::PointCloud<pcl::PointXYZI>);
     auto renderer2 = vtkSmartPointer<vtkRenderer>::New();
     auto renderWindow2 = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
@@ -58,6 +64,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->pclwidget->setRenderWindow(viewer->getRenderWindow());
     viewer->setupInteractor(ui->pclwidget->interactor(), ui->pclwidget->renderWindow());
     updateTopic();
+
+    QTimer *timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(callbackSpin()));// slotCountMessage是我们需要执行的响应函数
+    timer->start(10); // 每隔1s
     //测试帧数工具，每隔1ms载入点云图像，实测600多帧
     /*
     QTimer *timer = new QTimer(this);
@@ -89,20 +99,33 @@ void MainWindow::getPCDFile()
 
         if(pcl::io::loadPCDFile(path.toStdString(), *cloud)!=-1)
         {
+
             ui->PCLwidget_text->hide();
+            ui->pclwidget->renderWindow()->Render();
+            viewer->removeAllPointClouds();
+            viewer->addPointCloud<pcl::PointXYZI>(cloud, "sample cloud");
+            viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "sample cloud");
+            ui->pclwidget->update();
             ui->state_text->setText("Read succeed");
         }
         else
         {
             ui->state_text->setText("Open file Failed!");
         }
-        ui->pclwidget->renderWindow()->Render();
-
-        viewer->removeAllPointClouds();
-        viewer->addPointCloud<pcl::PointXYZI>(cloud, "sample cloud");
-        viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "sample cloud");
-        ui->pclwidget->update();
     }
+}
+
+void MainWindow::point_cloud_sub_callback(const sensor_msgs::PointCloud2ConstPtr &cloud)
+{
+    qDebug()<<"I have been called";
+    pcl::PointCloud<pcl::PointXYZI>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZI>);
+    pcl::fromROSMsg(*cloud, *temp_cloud);
+    ui->PCLwidget_text->hide();
+    ui->pclwidget->renderWindow()->Render();
+    viewer->removeAllPointClouds();
+    viewer->addPointCloud<pcl::PointXYZI>(temp_cloud, "sample cloud");
+    viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "sample cloud");
+    ui->pclwidget->update();
 }
 
 //编辑槽函数：点击时显示对应的bar，再点一下隐藏
@@ -181,7 +204,9 @@ void MainWindow::updateTopic()
     //std::cout << j.dump(4) << std::endl;
     std::string json_str = j.dump();
     std::cout << "Generated JSON string: " << json_str << std::endl;
-
+    std_msgs::String msg;
+    msg.data = json_str;
+    pubParameter.publish(msg);
 }
 
 void MainWindow::test(){
@@ -200,6 +225,11 @@ void MainWindow::test(){
     viewer->addPointCloud<pcl::PointXYZI>(cloud, "sample cloud");
     viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "sample cloud");
     ui->pclwidget->update();
+}
+
+void MainWindow::callbackSpin()
+{
+    ros::spinOnce();
 }
 
 void MainWindow::on_enablePointCloud_toggled(bool checked)
@@ -352,7 +382,6 @@ void MainWindow::connectAssembly()
     connect(ui->maxClusterSize, SIGNAL(changedSignal_int(int)), this, SLOT(setMaxClusterSize(int)));
 
 }
-
 
 void MainWindow::setMode(int mode)
 {
