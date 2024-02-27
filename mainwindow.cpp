@@ -115,11 +115,13 @@ void MainWindow::getPCDFile()
     }
 }
 
-void MainWindow::point_cloud_sub_callback(const sensor_msgs::PointCloud2ConstPtr &cloud)
+void MainWindow::point_cloud_sub_callback(const preprocess::PointCloudWithStringConstPtr& cloud_with_string)
 {
+    sensor_msgs::PointCloud2 cloud = cloud_with_string->point_cloud;
+    std_msgs::String bounding_Box = cloud_with_string->custom_string; 
     qDebug()<<"I have been called";
     pcl::PointCloud<pcl::PointXYZI>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZI>);
-    pcl::fromROSMsg(*cloud, *temp_cloud);
+    pcl::fromROSMsg(cloud, *temp_cloud);
     ui->PCLwidget_text->hide();
     ui->pclwidget->renderWindow()->Render();
     viewer->removeAllPointClouds();

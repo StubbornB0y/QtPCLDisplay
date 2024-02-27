@@ -4,7 +4,7 @@
 #include <pcl/visualization/pcl_visualizer.h>
 
 #include "sensor_msgs/PointCloud2.h"
-
+#include "preprocess/PointCloudWithString.h"
 #include <QMainWindow>
 #include <QButtonGroup>
 QT_BEGIN_NAMESPACE
@@ -20,7 +20,7 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    void point_cloud_sub_callback(const sensor_msgs::PointCloud2ConstPtr& cloud);
+    void point_cloud_sub_callback(const preprocess::PointCloudWithStringConstPtr& cloud_with_string);
 
     QButtonGroup *mainBtnGrp;
     QButtonGroup *traBtnGrp;

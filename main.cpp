@@ -4,6 +4,7 @@
 #include "sensor_msgs/PointCloud2.h"
 #include "ros/ros.h"
 #include "std_msgs/String.h"
+#include "preprocess/PointCloudWithString.h"
 //创建句柄，订阅和发布节点
 
 ros::Publisher pubParameter;
@@ -16,7 +17,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     MainWindow w;
     
-    point_cloud_sub = nh.subscribe<sensor_msgs::PointCloud2>("pre_chatter", 1, &MainWindow::point_cloud_sub_callback, &w);
+    point_cloud_sub = nh.subscribe<preprocess::PointCloudWithString>("pre_chatter", 1, &MainWindow::point_cloud_sub_callback, &w);
     w.show();
     return a.exec();
 }
