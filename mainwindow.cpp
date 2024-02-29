@@ -246,7 +246,6 @@ void MainWindow::on_enablePointCloud_toggled(bool checked)
         setEnablePointCloud(0);
         ui->automaticROI->hide();
     }
-    updateTopic();
 }
 
 
@@ -327,7 +326,7 @@ void MainWindow::resetButton()
     ui->ptg_maxValue->initScrollBar(-1.2);
     ui->ptg_maxValue->lineTextEdit->setText(QString::number(-1.2,'f',2));
 
-    ui->inOutRange->setChecked(false);
+    ui->inOutRange->setChecked(true);
     //planeFitting
     ui->distanceThreshold->setDouble(true);
     ui->distanceThreshold->setRange(0.01,10.0);
@@ -388,11 +387,13 @@ void MainWindow::connectAssembly()
 void MainWindow::setMode(int mode)
 {
     parameter.mode = mode;
+    updateTopic();
 }
 
 void MainWindow::setScheme(int scheme)
 {
     parameter.traditionalDetection.scheme=scheme;
+    updateTopic();
 }
 
 void MainWindow::setGridSize(double grid)
@@ -404,66 +405,79 @@ void MainWindow::setGridSize(double grid)
 void MainWindow::setFilterAxis(std::string filterAxis)
 {
     parameter.traditionalDetection.passThroughGrid.filterAxis = filterAxis;
+    updateTopic();
 }
 
 void MainWindow::setMinValue(double min)
 {
     parameter.traditionalDetection.passThroughGrid.minValue = min;
+    updateTopic();
 }
 
 void MainWindow::setMaxValue(double max)
 {
     parameter.traditionalDetection.passThroughGrid.maxValue = max;
+    updateTopic();
 }
 
 void MainWindow::setInOutRange(bool inOutRange)
 {
     parameter.traditionalDetection.passThroughGrid.inOutRange = inOutRange;
+    updateTopic();
 }
 
 void MainWindow::setDistanceThreshold(double distanceThreshold)
 {
     parameter.traditionalDetection.planeFitting.distanceThreshold = distanceThreshold;
+    updateTopic();
 }
 
 void MainWindow::setMaxIterationse(int maxIterations)
 {
     parameter.traditionalDetection.planeFitting.maxIterations = maxIterations;
+    updateTopic();
 }
 
 void MainWindow::setResidualRatio(double residualRatio)
 {
     parameter.traditionalDetection.planeFitting.residualRatio =residualRatio;
+    updateTopic();
 }
 
 void MainWindow::setClusteringRadius(double clusteringRadius)
 {
     parameter.traditionalDetection.euclideanClustering.clusteringRadius = clusteringRadius;
+    updateTopic();
 }
 
 void MainWindow::setMinClusterSize(int minClusterSize)
 {
     parameter.traditionalDetection.euclideanClustering.minClusterSize = minClusterSize;
+    updateTopic();
 }
 
 void MainWindow::setMaxClusterSize(int maxClusterSize)
 {
     parameter.traditionalDetection.euclideanClustering.maxClusterSize = maxClusterSize;
+    updateTopic();
 }
 
 void MainWindow::setEnableImage(int enableImage)
 {
     parameter.multimodalDetection.enableImage = enableImage;
+    updateTopic();
 }
 
 void MainWindow::setEnablePointCloud(int enablePointCloud)
 {
     parameter.multimodalDetection.enablePointCloud = enablePointCloud;
+    updateTopic();
 }
 
 void MainWindow::setAutomaticROI(int automaticROI)
 {
     parameter.multimodalDetection.automaticROI = automaticROI;
+    updateTopic();
 }
 
 
