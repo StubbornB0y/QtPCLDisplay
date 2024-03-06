@@ -11,7 +11,7 @@
                 "/home/user/Qt/6.6.1/gcc_64/include",
                 "/home/user/Qt/6.6.1/gcc_64/include/QtCore",
                 "/home/user/Qt/6.6.1/gcc_64/include/QtOpenGLWidgets",
-                "/home/user/build-Display-Desktop_Qt_6_6_1_GCC_64bit-Release/Display_autogen/include",
+                "/home/user/catkin_ws/build/PCLDisplay/Display_autogen/include",
                 "/home/user/Qt/6.6.1/gcc_64/include/QtGui",
                 "/home/user/Qt/6.6.1/gcc_64/include/QtOpenGL",
                 "/opt/ros/noetic/include",

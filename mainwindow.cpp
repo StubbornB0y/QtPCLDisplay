@@ -33,6 +33,7 @@
 
 #include "ros/ros.h"
 #include "std_msgs/String.h"
+#include "sensor_msgs/Image.h"
 extern ros::Publisher pubParameter;
 using json = nlohmann::json;
 MainWindow::MainWindow(QWidget *parent)
@@ -64,7 +65,12 @@ MainWindow::MainWindow(QWidget *parent)
     ui->pclwidget->setRenderWindow(viewer->getRenderWindow());
     viewer->setupInteractor(ui->pclwidget->interactor(), ui->pclwidget->renderWindow());
     updateTopic();
-
+    /*
+    QImage* ori_image = new QImage();
+    ori_image->load("/home/user/Pictures/Predator_Wallpaper_01_3840x2400.jpg");
+    QImage image_scaled = scaleImage(*ori_image);
+    ui->imageLabel->setPixmap(QPixmap::fromImage(image_scaled));
+    */
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(callbackSpin()));// slotCountMessage是我们需要执行的响应函数
     timer->start(10); // 每隔1s
@@ -127,7 +133,19 @@ void MainWindow::point_cloud_sub_callback(const preprocess::PointCloudWithString
     viewer->removeAllPointClouds();
     viewer->addPointCloud<pcl::PointXYZI>(temp_cloud, "sample cloud");
     viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "sample cloud");
+    ui->state_text->setText("Received massage");
     ui->pclwidget->update();
+}
+
+void MainWindow::image_sub_callback(const yoloinfer::yoloWithStringConstPtr &yolo_with_string)
+{
+    sensor_msgs::Image image =yolo_with_string->image;
+    std_msgs::String bounding_Box = yolo_with_string->custom_string;
+    qDebug()<<"Received Image";
+    QImage image_from_ros = convertToQImage(image);
+    QImage image_scaled = scaleImage(image_from_ros);
+    ui->imageLabel->setPixmap(QPixmap::fromImage(image_scaled));
+    //ui->->setPixmap(QPixmap::fromImage(*scale_image));
 }
 
 //编辑槽函数：点击时显示对应的bar，再点一下隐藏
@@ -536,3 +554,58 @@ void MainWindow::on_automaticROI_toggled(bool checked)
     }
 }
 
+QImage MainWindow::convertToQImage(const sensor_msgs::Image& rosImage)
+{
+    QImage::Format format;
+
+    // 根据ROS图像的编码格式设置QImage的格式
+    if (rosImage.encoding == "rgb8" || rosImage.encoding == "bgr8")
+    {
+        format = QImage::Format_RGB888;
+    }
+    else if (rosImage.encoding == "rgba8" || rosImage.encoding == "bgra8")
+    {
+        format = QImage::Format_RGBA8888;
+    }
+    else if (rosImage.encoding == "mono8")
+    {
+        format = QImage::Format_Grayscale8;
+    }
+    else
+    {
+        // 不支持的编码格式
+        return QImage();
+    }
+
+    // 创建QImage对象
+    QImage qImage(rosImage.data.data(), rosImage.width, rosImage.height, format);
+
+    // 如果ROS图像的步长与每行的字节数不匹配，则进行复制
+    if (rosImage.step != qImage.bytesPerLine())
+    {
+        QImage copiedImage = qImage.copy();
+        return copiedImage;
+    }
+
+    return qImage;
+}
+
+QImage MainWindow::scaleImage(QImage image)
+{
+    int ori_width = image.size().width();
+    int ori_height = image.size().height();
+
+    int m_width = ui->imageLabel->size().width();
+    int m_height = ui->imageLabel->size().height();
+
+    int pro;
+    if(ori_width / m_width >= ori_height / m_height)
+        pro = ori_width / m_width;
+    else
+        pro = ori_height / m_height;
+
+    int scale_width = ori_width / pro;
+    int scale_height = ori_height / pro;
+    QImage scale_image = image.scaled(scale_width, scale_height, Qt::KeepAspectRatio);
+    return scale_image;
+}

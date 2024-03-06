@@ -5,6 +5,7 @@
 
 #include "sensor_msgs/PointCloud2.h"
 #include "preprocess/PointCloudWithString.h"
+#include "yoloinfer/yoloWithString.h"
 #include <QMainWindow>
 #include <QButtonGroup>
 QT_BEGIN_NAMESPACE
@@ -21,7 +22,7 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     void point_cloud_sub_callback(const preprocess::PointCloudWithStringConstPtr& cloud_with_string);
-
+    void image_sub_callback(const yoloinfer::yoloWithStringConstPtr& yolo_with_string);
     QButtonGroup *mainBtnGrp;
     QButtonGroup *traBtnGrp;
     //储存json的结构体
@@ -116,7 +117,8 @@ private:
      //连接各个组件的信号和对应的槽，并初始化其他组件的初值
     void connectAssembly();
 
-    
+    QImage convertToQImage(const sensor_msgs::Image& rosImage);
+    QImage scaleImage(QImage image);
 };
 
 #endif // MAINWINDOW_H
