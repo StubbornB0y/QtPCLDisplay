@@ -15,7 +15,8 @@
                 "/home/user/Qt/6.6.1/gcc_64/include/QtGui",
                 "/home/user/Qt/6.6.1/gcc_64/include/QtOpenGL",
                 "/opt/ros/noetic/include",
-                "/home/user/catkin_ws/devel/include"
+                "/home/user/catkin_ws/devel/include",
+                "${workspaceFolder}"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

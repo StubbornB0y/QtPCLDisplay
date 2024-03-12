@@ -34,6 +34,8 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 #include "sensor_msgs/Image.h"
+
+#include "BoundingBox.h"
 extern ros::Publisher pubParameter;
 using json = nlohmann::json;
 MainWindow::MainWindow(QWidget *parent)
@@ -105,10 +107,69 @@ void MainWindow::getPCDFile()
 
         if(pcl::io::loadPCDFile(path.toStdString(), *cloud)!=-1)
         {
-
+            
+            BoundingBox boxAnalysis;
+            std::vector<BoundingBoxParameter> boxes = boxAnalysis.analysisString(R"({
+                "BoundingBox": [
+                    {
+                        "x": 58.8379,
+                        "y": 16.5403,
+                        "z": -0.72959,
+                        "w": 3.90107,
+                        "l": 1.57018,
+                        "h": 1.47626,
+                        "rt": 3.19253,
+                        "id": 0,
+                        "score": 0.500488
+                    },
+                    {
+                        "x": 58.8379,
+                        "y": 16.5403,
+                        "z": -0.72959,
+                        "w": 3.90107,
+                        "l": 1.57018,
+                        "h": 1.47626,
+                        "rt": 3.19253,
+                        "id": 0,
+                        "score": 0.500488
+                    },
+                    {
+                        "x": 58.8379,
+                        "y": 16.5403,
+                        "z": -0.72959,
+                        "w": 3.90107,
+                        "l": 1.57018,
+                        "h": 1.47626,
+                        "rt": 3.19253,
+                        "id": 0,
+                        "score": 0.500488
+                    }
+                ]
+            })");
+            qDebug()<<boxes.size();
+            //pcl::PointCloud<pcl::PointXYZI>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZI>);
             ui->PCLwidget_text->hide();
             ui->pclwidget->renderWindow()->Render();
             viewer->removeAllPointClouds();
+            for(const auto &box:boxes){
+                std::string cube_name = "cube_" + std::to_string(box.id);
+                viewer->addCube(Eigen::Vector3f(box.x,box.y,box.z),
+                                Eigen::Quaternionf(Eigen::AngleAxisf(box.rt, Eigen::Vector3f::UnitZ())),
+                                box.w,  //对应weight
+                                box.h,  //对应height
+                                box.l,  //对应depth
+                                cube_name
+                                );
+                                std::cout << "x: " << box.x << ", y: " << box.y << ", z: " << box.z
+                    << ", w: " << box.w << ", l: " << box.l << ", h: " << box.h
+                    << ", rt: " << box.rt << ", id: " << box.id << ", score: " << box.score
+                    << std::endl;
+                viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_WIREFRAME, cube_name);
+                viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 0.0, 1.0, 0.0, cube_name);
+            }     
+            /*ui->PCLwidget_text->hide();
+            ui->pclwidget->renderWindow()->Render();
+            viewer->removeAllPointClouds();*/
             viewer->addPointCloud<pcl::PointXYZI>(cloud, "sample cloud");
             viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "sample cloud");
             ui->pclwidget->update();
@@ -125,13 +186,33 @@ void MainWindow::point_cloud_sub_callback(const preprocess::PointCloudWithString
 {
     sensor_msgs::PointCloud2 cloud = cloud_with_string->point_cloud;
     std_msgs::String bounding_Box = cloud_with_string->custom_string; 
+    
     qDebug()<<"I have been called";
+    BoundingBox boxAnalysis;
+    std::vector<BoundingBoxParameter> boxes = boxAnalysis.analysisString(bounding_Box.data);
     pcl::PointCloud<pcl::PointXYZI>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZI>);
     pcl::fromROSMsg(cloud, *temp_cloud);
     ui->PCLwidget_text->hide();
     ui->pclwidget->renderWindow()->Render();
     viewer->removeAllPointClouds();
     viewer->addPointCloud<pcl::PointXYZI>(temp_cloud, "sample cloud");
+    for(const auto &box:boxes){
+        std::string cube_name = "cube_" + std::to_string(box.id);
+        viewer->addCube(Eigen::Vector3f(box.x,box.y,box.z),
+                        Eigen::Quaternionf(Eigen::AngleAxisf(box.rt, Eigen::Vector3f::UnitZ())),
+                        box.w,  //对应weight
+                        box.h,  //对应height
+                        box.l,  //对应depth
+                        cube_name
+                        );
+                        std::cout << "x: " << box.x << ", y: " << box.y << ", z: " << box.z
+              << ", w: " << box.w << ", l: " << box.l << ", h: " << box.h
+              << ", rt: " << box.rt << ", id: " << box.id << ", score: " << box.score
+              << std::endl;
+        //设置颜色和去掉表面
+        viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_WIREFRAME, cube_name);
+	    viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 0.0, 1.0, 0.0, cube_name);
+    }    
     viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "sample cloud");
     ui->state_text->setText("Received massage");
     ui->pclwidget->update();
@@ -143,6 +224,23 @@ void MainWindow::image_sub_callback(const yoloinfer::yoloWithStringConstPtr &yol
     std_msgs::String bounding_Box = yolo_with_string->custom_string;
     qDebug()<<"Received Image";
     QImage image_from_ros = convertToQImage(image);
+    BoundingBox boxAnalysis;
+    std::vector<BoundingBoxParameter> boxes = boxAnalysis.analysisString(bounding_Box.data);
+    for(const auto &box:boxes){
+        QPainter painter(&image_from_ros);
+
+        // 设置绘制参数，如画笔颜色、线宽等
+        painter.setPen(Qt::red);
+        painter.setBrush(Qt::NoBrush); // 设置填充为无填充，即空心方框
+        painter.setRenderHint(QPainter::Antialiasing, true); // 设置抗锯齿
+
+        // 绘制方框
+        QRect rect(QPoint(box.x-box.w/2,box.y-box.h/2),QSize(box.w,box.h));
+        painter.drawRect(rect);
+
+        // 结束绘制
+        painter.end();
+    }
     QImage image_scaled = scaleImage(image_from_ros);
     ui->imageLabel->setPixmap(QPixmap::fromImage(image_scaled));
     //ui->->setPixmap(QPixmap::fromImage(*scale_image));
@@ -559,9 +657,13 @@ QImage MainWindow::convertToQImage(const sensor_msgs::Image& rosImage)
     QImage::Format format;
 
     // 根据ROS图像的编码格式设置QImage的格式
-    if (rosImage.encoding == "rgb8" || rosImage.encoding == "bgr8")
+    if (rosImage.encoding == "rgb8")
     {
         format = QImage::Format_RGB888;
+    }
+    if (rosImage.encoding == "bgr8")
+    {
+        format = QImage::Format_BGR888;
     }
     else if (rosImage.encoding == "rgba8" || rosImage.encoding == "bgra8")
     {
@@ -579,14 +681,16 @@ QImage MainWindow::convertToQImage(const sensor_msgs::Image& rosImage)
 
     // 创建QImage对象
     QImage qImage(rosImage.data.data(), rosImage.width, rosImage.height, format);
-
+    //如果是BGR格式则转换
+    if(format == QImage::Format_BGR888){
+        qImage=qImage.rgbSwapped();
+    }
     // 如果ROS图像的步长与每行的字节数不匹配，则进行复制
     if (rosImage.step != qImage.bytesPerLine())
     {
         QImage copiedImage = qImage.copy();
         return copiedImage;
     }
-
     return qImage;
 }
 

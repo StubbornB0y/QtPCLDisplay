@@ -70,6 +70,8 @@ set(PROJECT_SOURCES
         mainwindow.ui
         myscrolltextbar.cpp
         myscrolltextbar.h
+        BoundingBox.h
+        BoundingBox.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
