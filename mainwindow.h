@@ -106,6 +106,8 @@ private slots:
 
     void on_automaticROI_toggled(bool checked);
 
+    void on_shiftButton_toggled(bool checked);
+
 private:
     Ui::MainWindow *ui;
 

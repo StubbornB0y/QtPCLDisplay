@@ -483,6 +483,8 @@ void MainWindow::resetButton()
 
 void MainWindow::connectAssembly()
 {
+    connect(ui->shiftButton, SIGNAL(toggled(bool)), this, SLOT(on_shiftButton_toggled(bool)));
+
     connect(ui->reset, SIGNAL(clicked()), this, SLOT(resetButton()));
 
     connect(ui->gridSize, SIGNAL(changedSignal_double(double)), this, SLOT(setGridSize(double)));
@@ -649,6 +651,26 @@ void MainWindow::on_automaticROI_toggled(bool checked)
     }
     else{
         setAutomaticROI(0);
+    }
+}
+
+void MainWindow::on_shiftButton_toggled(bool checked)
+{
+    if(checked){
+        ui->imageLabel->setMinimumSize(800,550);
+        ui->imageLabel->setParent(ui->PCLViewBox);
+        ui->imageLabel->setGeometry(12,32,800,550);
+        ui->pclwidget->setParent(ui->imageLabel);
+        ui->pclwidget->setMinimumSize(331,201);
+        ui->pclwidget->setGeometry(0,0,331,201);
+    }
+    else{
+        ui->pclwidget->setMinimumSize(800,550);
+        ui->pclwidget->setParent(ui->PCLViewBox);
+        ui->pclwidget->setGeometry(12,32,800,550);
+        ui->imageLabel->setParent(ui->pclwidget);
+        ui->imageLabel->setMinimumSize(331,201);
+        ui->imageLabel->setGeometry(0,0,331,201);
     }
 }
 
