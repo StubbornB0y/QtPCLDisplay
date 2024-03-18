@@ -70,6 +70,59 @@ MainWindow::MainWindow(QWidget *parent)
     /*
     QImage* ori_image = new QImage();
     ori_image->load("/home/user/Pictures/Predator_Wallpaper_01_3840x2400.jpg");
+    BoundingBox boxAnalysis;
+    std::vector<BoundingBoxParameter> boxes = boxAnalysis.analysisString(R"({
+                "BoundingBox": [
+                    {
+                        "x": 1500,
+                        "y": 1200,
+                        "z": -0.72959,
+                        "w": 1000,
+                        "l": 1.57018,
+                        "h": 500,
+                        "rt": 3.19253,
+                        "id": 0,
+                        "score": 0.500488
+                    },
+                    {
+                        "x": 1200,
+                        "y": 1000,
+                        "z": -0.72959,
+                        "w": 1000,
+                        "l": 1.57018,
+                        "h": 500,
+                        "rt": 3.19253,
+                        "id": 0,
+                        "score": 0.500488
+                    },
+                    {
+                        "x": 58.8379,
+                        "y": 16.5403,
+                        "z": -0.72959,
+                        "w": 3.90107,
+                        "l": 1.57018,
+                        "h": 1.47626,
+                        "rt": 3.19253,
+                        "id": 0,
+                        "score": 0.500488
+                    }
+                ]
+            })");
+    for(const auto &box:boxes){
+        QPainter painter(ori_image);
+
+        // 设置绘制参数，如画笔颜色、线宽等
+        painter.setPen(Qt::red);
+        painter.setBrush(Qt::NoBrush); // 设置填充为无填充，即空心方框
+        painter.setRenderHint(QPainter::Antialiasing, true); // 设置抗锯齿
+
+        // 绘制方框
+        QRect rect(QPoint(box.x-box.w/2,box.y-box.h/2),QSize(box.w,box.h));
+        painter.drawRect(rect);
+
+        // 结束绘制
+        painter.end();
+    }
     QImage image_scaled = scaleImage(*ori_image);
     ui->imageLabel->setPixmap(QPixmap::fromImage(image_scaled));
     */
@@ -657,19 +710,22 @@ void MainWindow::on_automaticROI_toggled(bool checked)
 void MainWindow::on_shiftButton_toggled(bool checked)
 {
     if(checked){
-        ui->imageLabel->setMinimumSize(800,550);
         ui->imageLabel->setParent(ui->PCLViewBox);
-        ui->imageLabel->setGeometry(12,32,800,550);
-        ui->pclwidget->setParent(ui->imageLabel);
-        ui->pclwidget->setMinimumSize(331,201);
-        ui->pclwidget->setGeometry(0,0,331,201);
+        ui->imageLabel->setMinimumSize(800,550);
+        ui->imageLabel->raise();
+        //ui->imageLabel->setGeometry(12,32,800,550);
+        //ui->pclwidget->setMinimumSize(331,201);
+        //ui->pclwidget->setParent(ui->imageLabel);
+        //ui->pclwidget->setGeometry(0,0,331,201);
+        qDebug()<<ui->pclwidget->size();
+        qDebug()<<ui->imageLabel->size();
     }
     else{
-        ui->pclwidget->setMinimumSize(800,550);
         ui->pclwidget->setParent(ui->PCLViewBox);
+        ui->pclwidget->setMinimumSize(800,550);
         ui->pclwidget->setGeometry(12,32,800,550);
-        ui->imageLabel->setParent(ui->pclwidget);
         ui->imageLabel->setMinimumSize(331,201);
+        ui->imageLabel->setParent(ui->pclwidget);
         ui->imageLabel->setGeometry(0,0,331,201);
     }
 }
@@ -679,13 +735,9 @@ QImage MainWindow::convertToQImage(const sensor_msgs::Image& rosImage)
     QImage::Format format;
 
     // 根据ROS图像的编码格式设置QImage的格式
-    if (rosImage.encoding == "rgb8")
+    if (rosImage.encoding == "rgb8" || rosImage.encoding == "bgr8")
     {
         format = QImage::Format_RGB888;
-    }
-    if (rosImage.encoding == "bgr8")
-    {
-        format = QImage::Format_BGR888;
     }
     else if (rosImage.encoding == "rgba8" || rosImage.encoding == "bgra8")
     {
@@ -704,7 +756,7 @@ QImage MainWindow::convertToQImage(const sensor_msgs::Image& rosImage)
     // 创建QImage对象
     QImage qImage(rosImage.data.data(), rosImage.width, rosImage.height, format);
     //如果是BGR格式则转换
-    if(format == QImage::Format_BGR888){
+    if(rosImage.encoding == "bgr8" || rosImage.encoding == "bgra8"){
         qImage=qImage.rgbSwapped();
     }
     // 如果ROS图像的步长与每行的字节数不匹配，则进行复制
