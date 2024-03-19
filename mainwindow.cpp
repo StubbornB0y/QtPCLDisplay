@@ -248,9 +248,11 @@ void MainWindow::point_cloud_sub_callback(const preprocess::PointCloudWithString
     ui->PCLwidget_text->hide();
     ui->pclwidget->renderWindow()->Render();
     viewer->removeAllPointClouds();
+    viewer->removeAllShapes();
     viewer->addPointCloud<pcl::PointXYZI>(temp_cloud, "sample cloud");
+    int boxid=0;
     for(const auto &box:boxes){
-        std::string cube_name = "cube_" + std::to_string(box.id);
+        std::string cube_name = "cube_" + std::to_string(boxid);
         viewer->addCube(Eigen::Vector3f(box.x,box.y,box.z),
                         Eigen::Quaternionf(Eigen::AngleAxisf(box.rt, Eigen::Vector3f::UnitZ())),
                         box.w,  //对应weight
@@ -265,6 +267,7 @@ void MainWindow::point_cloud_sub_callback(const preprocess::PointCloudWithString
         //设置颜色和去掉表面
         viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_WIREFRAME, cube_name);
 	    viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 0.0, 1.0, 0.0, cube_name);
+        boxid++;
     }    
     viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "sample cloud");
     ui->state_text->setText("Received massage");
@@ -710,23 +713,24 @@ void MainWindow::on_automaticROI_toggled(bool checked)
 void MainWindow::on_shiftButton_toggled(bool checked)
 {
     if(checked){
-        ui->imageLabel->setParent(ui->PCLViewBox);
+        //ui->imageLabel->setParent(ui->PCLViewBox);
         ui->imageLabel->setMinimumSize(800,550);
-        ui->imageLabel->raise();
-        //ui->imageLabel->setGeometry(12,32,800,550);
-        //ui->pclwidget->setMinimumSize(331,201);
+        ui->imageLabel->setGeometry(12,32,800,550);
+        ui->pclwidget->setMinimumSize(331,201);
         //ui->pclwidget->setParent(ui->imageLabel);
-        //ui->pclwidget->setGeometry(0,0,331,201);
+        ui->pclwidget->setGeometry(12,32,331,201);
+        ui->pclwidget->raise();
         qDebug()<<ui->pclwidget->size();
         qDebug()<<ui->imageLabel->size();
     }
     else{
-        ui->pclwidget->setParent(ui->PCLViewBox);
+        //ui->pclwidget->setParent(ui->PCLViewBox);
         ui->pclwidget->setMinimumSize(800,550);
         ui->pclwidget->setGeometry(12,32,800,550);
         ui->imageLabel->setMinimumSize(331,201);
-        ui->imageLabel->setParent(ui->pclwidget);
-        ui->imageLabel->setGeometry(0,0,331,201);
+        //ui->imageLabel->setParent(ui->pclwidget);
+        ui->imageLabel->setGeometry(12,32,331,201);
+        ui->imageLabel->raise();
     }
 }
 
