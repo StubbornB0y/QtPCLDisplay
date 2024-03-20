@@ -235,12 +235,50 @@ void MainWindow::getPCDFile()
     }
 }
 
-void MainWindow::point_cloud_sub_callback(const preprocess::PointCloudWithStringConstPtr& cloud_with_string)
+void MainWindow::tra_point_cloud_sub_callback(const preprocess::PointCloudWithStringConstPtr& cloud_with_string)
 {
-    if(!ui->enablePointCloud->isChecked()){
-
+    if(parameter.mode==1){
+        sensor_msgs::PointCloud2 cloud = cloud_with_string->point_cloud;
+        std_msgs::String bounding_Box = cloud_with_string->custom_string; 
+        
+        qDebug()<<"I have been called";
+        BoundingBox boxAnalysis;
+        std::vector<BoundingBoxParameter> boxes = boxAnalysis.analysisString(bounding_Box.data);
+        pcl::PointCloud<pcl::PointXYZI>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZI>);
+        pcl::fromROSMsg(cloud, *temp_cloud);
+        ui->PCLwidget_text->hide();
+        ui->pclwidget->renderWindow()->Render();
+        viewer->removeAllPointClouds();
+        viewer->removeAllShapes();
+        viewer->addPointCloud<pcl::PointXYZI>(temp_cloud, "sample cloud");
+        int boxid=0;
+        for(const auto &box:boxes){
+            std::string cube_name = "cube_" + std::to_string(boxid);
+            viewer->addCube(Eigen::Vector3f(box.x,box.y,box.z),
+                            Eigen::Quaternionf(Eigen::AngleAxisf(box.rt, Eigen::Vector3f::UnitZ())),
+                            box.w,  //对应weight
+                            box.h,  //对应height
+                            box.l,  //对应depth
+                            cube_name
+                            );
+                            std::cout << "x: " << box.x << ", y: " << box.y << ", z: " << box.z
+                << ", w: " << box.w << ", l: " << box.l << ", h: " << box.h
+                << ", rt: " << box.rt << ", id: " << box.id << ", score: " << box.score
+                << std::endl;
+            //设置颜色和去掉表面
+            viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_WIREFRAME, cube_name);
+            viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 0.0, 1.0, 0.0, cube_name);
+            boxid++;
+        }    
+        viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "sample cloud");
+        ui->state_text->setText("Received massage");
+        ui->pclwidget->update();
     }
-    else{
+}
+
+void MainWindow::mul_point_cloud_sub_callback(const preprocess::PointCloudWithStringConstPtr &cloud_with_string)
+{
+    if(ui->enablePointCloud->isChecked()){
         sensor_msgs::PointCloud2 cloud = cloud_with_string->point_cloud;
         std_msgs::String bounding_Box = cloud_with_string->custom_string; 
         

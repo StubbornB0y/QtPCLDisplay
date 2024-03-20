@@ -22,7 +22,8 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    void point_cloud_sub_callback(const preprocess::PointCloudWithStringConstPtr& cloud_with_string);
+    void tra_point_cloud_sub_callback(const preprocess::PointCloudWithStringConstPtr& cloud_with_string);
+    void mul_point_cloud_sub_callback(const preprocess::PointCloudWithStringConstPtr& cloud_with_string);
     void image_sub_callback(const yoloinfer::yoloWithStringConstPtr& yolo_with_string);
     void lidar_sub_callback(const sensor_msgs::PointCloudConstPtr& lidar_cloud);
     void camera_sub_callback(const sensor_msgs::ImageConstPtr& image);
