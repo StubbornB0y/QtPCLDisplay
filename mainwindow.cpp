@@ -237,69 +237,109 @@ void MainWindow::getPCDFile()
 
 void MainWindow::point_cloud_sub_callback(const preprocess::PointCloudWithStringConstPtr& cloud_with_string)
 {
-    sensor_msgs::PointCloud2 cloud = cloud_with_string->point_cloud;
-    std_msgs::String bounding_Box = cloud_with_string->custom_string; 
-    
-    qDebug()<<"I have been called";
-    BoundingBox boxAnalysis;
-    std::vector<BoundingBoxParameter> boxes = boxAnalysis.analysisString(bounding_Box.data);
-    pcl::PointCloud<pcl::PointXYZI>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZI>);
-    pcl::fromROSMsg(cloud, *temp_cloud);
-    ui->PCLwidget_text->hide();
-    ui->pclwidget->renderWindow()->Render();
-    viewer->removeAllPointClouds();
-    viewer->removeAllShapes();
-    viewer->addPointCloud<pcl::PointXYZI>(temp_cloud, "sample cloud");
-    int boxid=0;
-    for(const auto &box:boxes){
-        std::string cube_name = "cube_" + std::to_string(boxid);
-        viewer->addCube(Eigen::Vector3f(box.x,box.y,box.z),
-                        Eigen::Quaternionf(Eigen::AngleAxisf(box.rt, Eigen::Vector3f::UnitZ())),
-                        box.w,  //对应weight
-                        box.h,  //对应height
-                        box.l,  //对应depth
-                        cube_name
-                        );
-                        std::cout << "x: " << box.x << ", y: " << box.y << ", z: " << box.z
-              << ", w: " << box.w << ", l: " << box.l << ", h: " << box.h
-              << ", rt: " << box.rt << ", id: " << box.id << ", score: " << box.score
-              << std::endl;
-        //设置颜色和去掉表面
-        viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_WIREFRAME, cube_name);
-	    viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 0.0, 1.0, 0.0, cube_name);
-        boxid++;
-    }    
-    viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "sample cloud");
-    ui->state_text->setText("Received massage");
-    ui->pclwidget->update();
+    if(!ui->enablePointCloud->isChecked()){
+
+    }
+    else{
+        sensor_msgs::PointCloud2 cloud = cloud_with_string->point_cloud;
+        std_msgs::String bounding_Box = cloud_with_string->custom_string; 
+        
+        qDebug()<<"I have been called";
+        BoundingBox boxAnalysis;
+        std::vector<BoundingBoxParameter> boxes = boxAnalysis.analysisString(bounding_Box.data);
+        pcl::PointCloud<pcl::PointXYZI>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZI>);
+        pcl::fromROSMsg(cloud, *temp_cloud);
+        ui->PCLwidget_text->hide();
+        ui->pclwidget->renderWindow()->Render();
+        viewer->removeAllPointClouds();
+        viewer->removeAllShapes();
+        viewer->addPointCloud<pcl::PointXYZI>(temp_cloud, "sample cloud");
+        int boxid=0;
+        for(const auto &box:boxes){
+            std::string cube_name = "cube_" + std::to_string(boxid);
+            viewer->addCube(Eigen::Vector3f(box.x,box.y,box.z),
+                            Eigen::Quaternionf(Eigen::AngleAxisf(box.rt, Eigen::Vector3f::UnitZ())),
+                            box.w,  //对应weight
+                            box.h,  //对应height
+                            box.l,  //对应depth
+                            cube_name
+                            );
+                            std::cout << "x: " << box.x << ", y: " << box.y << ", z: " << box.z
+                << ", w: " << box.w << ", l: " << box.l << ", h: " << box.h
+                << ", rt: " << box.rt << ", id: " << box.id << ", score: " << box.score
+                << std::endl;
+            //设置颜色和去掉表面
+            viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_WIREFRAME, cube_name);
+            viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 0.0, 1.0, 0.0, cube_name);
+            boxid++;
+        }    
+        viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "sample cloud");
+        ui->state_text->setText("Received massage");
+        ui->pclwidget->update();
+    }
 }
 
 void MainWindow::image_sub_callback(const yoloinfer::yoloWithStringConstPtr &yolo_with_string)
 {
-    sensor_msgs::Image image =yolo_with_string->image;
-    std_msgs::String bounding_Box = yolo_with_string->custom_string;
-    qDebug()<<"Received Image";
-    QImage image_from_ros = convertToQImage(image);
-    BoundingBox boxAnalysis;
-    std::vector<BoundingBoxParameter> boxes = boxAnalysis.analysisString(bounding_Box.data);
-    for(const auto &box:boxes){
-        QPainter painter(&image_from_ros);
+    if(ui->enableImage->isChecked()){
+        sensor_msgs::Image image =yolo_with_string->image;
+        std_msgs::String bounding_Box = yolo_with_string->custom_string;
+        qDebug()<<"Received Image";
+        QImage image_from_ros = convertToQImage(image);
+        BoundingBox boxAnalysis;
+        std::vector<BoundingBoxParameter> boxes = boxAnalysis.analysisString(bounding_Box.data);
+        for(const auto &box:boxes){
+            QPainter painter(&image_from_ros);
 
-        // 设置绘制参数，如画笔颜色、线宽等
-        painter.setPen(Qt::red);
-        painter.setBrush(Qt::NoBrush); // 设置填充为无填充，即空心方框
-        painter.setRenderHint(QPainter::Antialiasing, true); // 设置抗锯齿
+            // 设置绘制参数，如画笔颜色、线宽等
+            painter.setPen(Qt::red);
+            painter.setBrush(Qt::NoBrush); // 设置填充为无填充，即空心方框
+            painter.setRenderHint(QPainter::Antialiasing, true); // 设置抗锯齿
 
-        // 绘制方框
-        QRect rect(QPoint(box.x-box.w/2,box.y-box.h/2),QSize(box.w,box.h));
-        painter.drawRect(rect);
+            // 绘制方框
+            QRect rect(QPoint(box.x-box.w/2,box.y-box.h/2),QSize(box.w,box.h));
+            painter.drawRect(rect);
 
-        // 结束绘制
-        painter.end();
+            // 结束绘制
+            painter.end();
+        }
+        QImage image_scaled = scaleImage(image_from_ros);
+        ui->imageLabel->setPixmap(QPixmap::fromImage(image_scaled));
+        //ui->->setPixmap(QPixmap::fromImage(*scale_image));
     }
-    QImage image_scaled = scaleImage(image_from_ros);
-    ui->imageLabel->setPixmap(QPixmap::fromImage(image_scaled));
-    //ui->->setPixmap(QPixmap::fromImage(*scale_image));
+}
+
+void MainWindow::lidar_sub_callback(const sensor_msgs::PointCloudConstPtr &lidar_cloud)
+{
+    if(!ui->enablePointCloud->isChecked()){
+        pcl::PointCloud<pcl::PointXYZI>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZI>);
+        pcl::PointXYZI point;
+        for (size_t i = 0; i < lidar_cloud->points.size(); ++i) {
+            point.x = lidar_cloud->points[i].x;
+            point.y = lidar_cloud->points[i].y;
+            point.z = lidar_cloud->points[i].z;
+            point.intensity = lidar_cloud->channels[0].values[i];
+            cloud->push_back(point);
+        }
+        ui->PCLwidget_text->hide();
+        ui->pclwidget->renderWindow()->Render();
+        viewer->removeAllPointClouds();
+        viewer->removeAllShapes();
+        viewer->addPointCloud<pcl::PointXYZI>(temp_cloud, "sample cloud");
+        viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "sample cloud");
+        ui->state_text->setText("Received massage");
+        ui->pclwidget->update();
+    }
+
+}
+
+void MainWindow::camera_sub_callback(const sensor_msgs::ImageConstPtr &image)
+{
+    if(!ui->enableImage->isChecked()){
+        QImage image_from_ros = convertToQImage(*image);
+        QImage image_scaled = scaleImage(image_from_ros);
+        ui->imageLabel->setPixmap(QPixmap::fromImage(image_scaled));
+    }
 }
 
 //编辑槽函数：点击时显示对应的bar，再点一下隐藏
@@ -322,6 +362,7 @@ void MainWindow::on_Function1_clicked()
     }
     if(ui->Function1->isChecked()){
         setMode(1);
+        ui->imageLabel->hide();
     }
     else if(ui->Function1->isChecked() == false &&ui->Function3->isChecked() == false){
         setMode(0);
@@ -349,6 +390,7 @@ void MainWindow::on_Function3_clicked()
 
     if(ui->Function3->isChecked()){
         setMode(2);
+        ui->imageLabel->show();
     }
     else if(ui->Function1->isChecked() == false && ui->Function3->isChecked() == false){
         setMode(0);

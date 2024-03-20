@@ -1,16 +1,19 @@
 #include "mainwindow.h"
 
 #include <QApplication>
-#include "sensor_msgs/PointCloud2.h"
+#include "sensor_msgs/PointCloud.h"
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 #include "preprocess/PointCloudWithString.h"
 #include "yoloinfer/yoloWithString.h"
+#include "sensor_msgs/Image.h"
 //创建句柄，订阅和发布节点
 
 ros::Publisher pubParameter;
-ros::Subscriber point_cloud_sub;
+ros::Subscriber pre_pcl_sub;
 ros::Subscriber yolo_infer_sub;
+ros::Subscriber lidar_pcl_sub;
+ros::Subscriber camera_sub;
 int main(int argc, char *argv[])
 {
     ros::init(argc,argv,"publish");
@@ -19,7 +22,9 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     MainWindow w;
     yolo_infer_sub = nh.subscribe<yoloinfer::yoloWithString>("yolo_chatter" , 1, &MainWindow::image_sub_callback, &w);
-    point_cloud_sub = nh.subscribe<preprocess::PointCloudWithString>("pre_chatter", 1, &MainWindow::point_cloud_sub_callback, &w);
+    pre_pcl_sub = nh.subscribe<preprocess::PointCloudWithString>("pre_chatter", 1, &MainWindow::point_cloud_sub_callback, &w);
+    lidar_pcl_sub = nh.subscribe<sensor_msgs::PointCloud>("l_chatter",1,&MainWindow::lidar_sub_callback,&w);
+    camera_sub = nh.subscribe<sensor_msgs::Image>("c_chatter",1,&MainWindow::camera_sub_callback,&w);
     w.show();
     return a.exec();
 }

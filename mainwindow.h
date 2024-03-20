@@ -4,6 +4,7 @@
 #include <pcl/visualization/pcl_visualizer.h>
 
 #include "sensor_msgs/PointCloud2.h"
+#include "sensor_msgs/PointCloud.h"
 #include "preprocess/PointCloudWithString.h"
 #include "yoloinfer/yoloWithString.h"
 #include <QMainWindow>
@@ -23,6 +24,8 @@ public:
     ~MainWindow();
     void point_cloud_sub_callback(const preprocess::PointCloudWithStringConstPtr& cloud_with_string);
     void image_sub_callback(const yoloinfer::yoloWithStringConstPtr& yolo_with_string);
+    void lidar_sub_callback(const sensor_msgs::PointCloudConstPtr& lidar_cloud);
+    void camera_sub_callback(const sensor_msgs::ImageConstPtr& image);
     QButtonGroup *mainBtnGrp;
     QButtonGroup *traBtnGrp;
     //储存json的结构体

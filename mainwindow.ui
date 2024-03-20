@@ -1475,9 +1475,6 @@
          <height>201</height>
         </size>
        </property>
-       <property name="styleSheet">
-        <string notr="true">background-color: rgb(52, 101, 164);</string>
-       </property>
        <property name="text">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
